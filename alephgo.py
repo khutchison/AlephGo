@@ -1,7 +1,7 @@
 # set the size of the game and create the board
 gameSize = int(input("Game Size: "))
 board = [[["+", 0] for column in range(gameSize)] for row in range(gameSize)]
-groupList = [(i + 1) for i in range(gameSize * 10)]
+groupList = [(i + 1) for i in range(gameSize * 100)]
 gameOver = False
 
 #keep track of the players by tile symbol and score 
@@ -25,7 +25,14 @@ def getSymbol():
 	else: 
 		return player2[0]
 
-def getGroup(index): 
+def getEnemySymbol():
+	if currentPlayer == 1:
+		return player2[0]
+	else: 
+		return player1[0]
+
+def getGroup(index):
+	#print(board[index[0]][index[1]][1]) 
 	return board[index[0]][index[1]][1]
 
 def isEmpty(row, column):
@@ -63,18 +70,21 @@ def newGroup():
 	del groupList[0]
 	return myGroup
 
-def mergeGroups(stonesList):
+def mergeGroups(stonesList, row, column):
 	groupsToMerge = []
-	for index in stonesList:
-		if (index not in groupsToMerge):
-			groupsToMerge.append(getGroup(stonesList[index]))
+	myGroup = None
+	for i in stonesList:
+		myGroup = getGroup(i)
+		if myGroup not in groupsToMerge:
+			groupsToMerge.append(myGroup)
 	mergedGroup = newGroup()
-	for row in board:
-		for column in board:
-			if board[row][column][1] in groupsToMerge:
-				board[row][column][1] = mergedGroup
-	for group in groupsToMerge:
-		groupList.append(group)
+	for r in range(gameSize):
+		for c in range(gameSize):
+			if board[r][c][1] in groupsToMerge:
+				board[r][c][1] = mergedGroup
+	board[row][column][1] = mergedGroup
+	#for group in groupsToMerge:
+		#groupList.append(group)
 
 def assignGroup(row, column):
 	allyList = adjacentAllies(row, column)
@@ -83,12 +93,84 @@ def assignGroup(row, column):
 	elif len(allyList) == 1:
 		board[row][column][1] = getGroup(allyList[0])
 	else:
-		allyList.append([row, column])
-		mergeGroups(allyList)
+		mergeGroups(allyList, row, column)
+		
+		#for i in range(len(allyList)):
+			#print(allyList[i][1])
+	#print(len(allyList)) # TESTPRINT
+def adjacentEnemies(row, column):
+	enemyList = []
+	enemySymbol = getEnemySymbol()
+	#if isEdge(row, column) == False:
+	if board[row-1][column][0] == enemySymbol:
+		enemyList.append([row - 1, column])
+	if board[row+1][column][0] == enemySymbol:
+		enemyList.append([row+1, column])
+	if board[row][column+1][0] == enemySymbol:
+		enemyList.append([row, column+1])
+	if board[row][column-1][0] == enemySymbol:
+		enemyList.append([row, column-1])
+	#else: 
+		# insert code for edge cases 
+	return enemyList
+
+def hasLiberty(row, column):
+	if board[row-1][column][0] == "+":
+		return True
+	elif board[row+1][column][0] == "+":
+		return True
+	elif board[row][column+1][0] == "+":
+		return True
+	elif board[row][column-1][0] == "+":
+		return True
+	else:
+		return False
+
+def groupHasLiberty(groupNumber):
+	myLiberty = False
+	for i in range(gameSize):
+		if myLiberty == True:
+			break
+		else: 
+			for n in range(gameSize):
+				if hasLiberty(i, n) == True:
+					myLiberty = True
+					break
+	return myLiberty
+
+def awardPoints(number):
+	if currentPlayer == 1:
+		player1[1] += number
+	else:
+		player2[1] += number
+
+def removeStone(row, column):
+	board[r][c] = ["+", 0]
+	awardPoints(1)
+
+def groupCapture(groupNumber):
+	for r in range(gameSize):
+		for c in range(gameSize):
+			if board[r][c][1] == groupNumber:
+				removeStone(r, c)
+
+def captureCheck(row, column):
+	myEnemies = adjacentEnemies(row, column)
+	enemyGroups = []
+	for i in range(len(myEnemies)):
+		r = myEnemies[i][0]
+		c = myEnemies[i][1]
+		enemyGroups.append(board[r][c][1])
+	for n in enemyGroups:
+		if groupHasLiberty(n) == False:
+			groupCapture(n)
 
 def playStone(row, column):
 	board[row][column][0] = getSymbol()
 	assignGroup(row, column)
+	captureCheck(row, column)
+	#allyList = adjacentAllies(row, column)
+	#print("allyList: " + str(len(allyList))) # TESTPRINT
 
 # -------- test methods below here --------
 def printGroups():
@@ -111,6 +193,13 @@ def getMove():
 		printBoard()
 		printGroups() # for test purposes ONLY!
 
+def switchPlayer():
+	global currentPlayer
+	if currentPlayer == 1:
+		currentPlayer = 2
+	else:
+		currentPlayer = 1
+
 # ----- game methods above -----
 
 printBoard()
@@ -118,4 +207,5 @@ printBoard()
 # ------ main game loop below -----
 while gameOver == False:
 	getMove()
+	switchPlayer()
 
