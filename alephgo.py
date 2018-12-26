@@ -11,6 +11,12 @@ currentPlayer = 1
 
 # ----- game methods -----
 
+def printScore():
+	if currentPlayer == 1:
+		print(player1[1])
+	else:
+		print(player2[1])
+
 def printBoard(): #print out the game board
 	for i in range(gameSize):
 		for n in range(gameSize):
@@ -28,8 +34,10 @@ def getSymbol():
 def getEnemySymbol():
 	if currentPlayer == 1:
 		return player2[0]
+		print("Got enemy symbol! " + player2[0]) #TESTPRINT
 	else: 
 		return player1[0]
+		print("Got enemy symbol! " + player1[0]) #TESTPRINT
 
 def getGroup(index):
 	#print(board[index[0]][index[1]][1]) 
@@ -112,10 +120,12 @@ def adjacentEnemies(row, column):
 		enemyList.append([row, column-1])
 	#else: 
 		# insert code for edge cases 
+	print("Enemy list length: " + str(len(enemyList))) # TESTPRINT
 	return enemyList
 
 def hasLiberty(row, column):
 	if board[row-1][column][0] == "+":
+
 		return True
 	elif board[row+1][column][0] == "+":
 		return True
@@ -133,7 +143,8 @@ def groupHasLiberty(groupNumber):
 			break
 		else: 
 			for n in range(gameSize):
-				if hasLiberty(i, n) == True:
+				if (hasLiberty(i, n) == True) and getGroup([i, n]) == groupNumber:
+					print("Found a liberty! groupHasLiberty")
 					myLiberty = True
 					break
 	return myLiberty
@@ -143,9 +154,10 @@ def awardPoints(number):
 		player1[1] += number
 	else:
 		player2[1] += number
+	printScore() #TESTPRINT
 
 def removeStone(row, column):
-	board[r][c] = ["+", 0]
+	board[row][column] = ["+", 0]
 	awardPoints(1)
 
 def groupCapture(groupNumber):
@@ -199,6 +211,8 @@ def switchPlayer():
 		currentPlayer = 2
 	else:
 		currentPlayer = 1
+
+
 
 # ----- game methods above -----
 
