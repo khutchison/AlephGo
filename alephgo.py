@@ -34,10 +34,10 @@ def getSymbol():
 def getEnemySymbol():
 	if currentPlayer == 1:
 		return player2[0]
-		print("Got enemy symbol! " + player2[0]) #TESTPRINT
+		#print("Got enemy symbol! " + player2[0]) #TESTPRINT
 	else: 
 		return player1[0]
-		print("Got enemy symbol! " + player1[0]) #TESTPRINT
+		#print("Got enemy symbol! " + player1[0]) #TESTPRINT
 
 def getGroup(index):
 	#print(board[index[0]][index[1]][1]) 
@@ -61,13 +61,13 @@ def adjacentAllies(row, column):
 	allyList = []
 	mySymbol = getSymbol()
 	#if isEdge(row, column) == False:
-	if board[row-1][column][0] == mySymbol:
+	if (row > 0) and (board[row-1][column][0] == mySymbol):
 		allyList.append([row - 1, column])
-	if board[row+1][column][0] == mySymbol:
+	if (row < gameSize - 1) and (board[row+1][column][0] == mySymbol):
 		allyList.append([row+1, column])
-	if board[row][column+1][0] == mySymbol:
+	if (column < gameSize) and (board[row][column+1][0] == mySymbol):
 		allyList.append([row, column+1])
-	if board[row][column-1][0] == mySymbol:
+	if (column > 0) and (board[row][column-1][0] == mySymbol):
 		allyList.append([row, column-1])
 	#else: 
 		# insert code for edge cases 
@@ -110,28 +110,27 @@ def adjacentEnemies(row, column):
 	enemyList = []
 	enemySymbol = getEnemySymbol()
 	#if isEdge(row, column) == False:
-	if board[row-1][column][0] == enemySymbol:
+	if (row > 0) and (board[row-1][column][0] == enemySymbol):
 		enemyList.append([row - 1, column])
-	if board[row+1][column][0] == enemySymbol:
+	if (row < gameSize - 1) and (board[row+1][column][0] == enemySymbol):
 		enemyList.append([row+1, column])
-	if board[row][column+1][0] == enemySymbol:
+	if (column < gameSize - 1) and (board[row][column+1][0] == enemySymbol):
 		enemyList.append([row, column+1])
-	if board[row][column-1][0] == enemySymbol:
+	if (column > 0) and (board[row][column-1][0] == enemySymbol):
 		enemyList.append([row, column-1])
 	#else: 
 		# insert code for edge cases 
-	print("Enemy list length: " + str(len(enemyList))) # TESTPRINT
+	#print("Enemy list length: " + str(len(enemyList))) # TESTPRINT
 	return enemyList
 
 def hasLiberty(row, column):
-	if board[row-1][column][0] == "+":
-
+	if (board[row-1][column][0] == "+") and (row > 0):
 		return True
-	elif board[row+1][column][0] == "+":
+	elif (board[row+1][column][0] == "+") and (row < gameSize - 1):
 		return True
-	elif board[row][column+1][0] == "+":
+	elif (board[row][column+1][0] == "+") and (column < gameSize + 1):
 		return True
-	elif board[row][column-1][0] == "+":
+	elif (board[row][column-1][0] == "+") and (column > 0):
 		return True
 	else:
 		return False
@@ -211,8 +210,6 @@ def switchPlayer():
 		currentPlayer = 2
 	else:
 		currentPlayer = 1
-
-
 
 # ----- game methods above -----
 
