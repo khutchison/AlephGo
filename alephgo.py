@@ -193,16 +193,41 @@ def printGroups():
 				print(str(board[i][n][1]) + " ", end = '')
 # -------- test methods above here --------
 
+def inRange(row, column):
+	if row > (gameSize - 1):
+		return False
+	elif row < 0:
+		return False
+	elif column > (gameSize - 1):
+		return False
+	elif column < 0:
+		return False
+	else:
+		return True
+
 def getMove():
-	row = int(input("Row: "))
-	column = int(input("Column: "))
-	if isEmpty(row, column) == False:
-		print("Error: there is already a stone at this index.")
+	row = input("Row: ")
+	column = input("Column: ")
+	try:
+		int(row)
+		int(column)
+	except:
+		print("Error: please enter row and column numbers between 1 and " + str(gameSize - 1))
 		getMove()
-	else: 
-		playStone(row, column)
-		printBoard()
-		printGroups() # for test purposes ONLY!
+	else:
+		row = int(row)
+		column = int(column)
+		if inRange(row, column) == False:
+			print("Error: these coordinates are not in range.")
+			getMove()
+		else:
+			if isEmpty(row, column) == False:
+				print("Error: there is already a stone at this index.")
+				getMove()
+			else: 
+				playStone(row, column)
+				printBoard()
+				printGroups() # for test purposes ONLY!
 
 def switchPlayer():
 	global currentPlayer
